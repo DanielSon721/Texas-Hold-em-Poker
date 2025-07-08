@@ -157,7 +157,10 @@ def print_information(ai_array, player_card1, player_card2, player_money, pot, f
     for i in range(len(ai_array)):
         if ai_array[i].is_folded():
             continue
-        print("Opponent " + str (i + 1) + ":\t" + ai_array[i].get_cards() + "\tMoney: " + str (ai_array[i].get_money()))
+        if end:
+            print("Opponent " + str (i + 1) + ":\t" + ai_array[i].get_cards() + "\tMoney: " + str (ai_array[i].get_money()))
+        else:
+            print("Opponent " + str (i + 1) + ":\t\U0001F0A0 \U0001F0A0\tMoney: " + str (ai_array[i].get_money()))
     
     #prints player information
     print("You:\t\t" + player_card1.__str__() + " " + player_card2.__str__() + "\tMoney: " + str (player_money) + "\n")
