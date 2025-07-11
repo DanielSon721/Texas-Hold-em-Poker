@@ -1,1 +1,1 @@
-        print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, turn, river, True)
+ai_array[i].get_name()

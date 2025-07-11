@@ -5,6 +5,7 @@ import random
 
 class AI:
 
+    name = None
     card1 = None
     card2 = None
     confidence = 0
@@ -13,6 +14,9 @@ class AI:
     ranking = 0
     kicker1 = 0
     kicker2 = 0
+
+    def __init__(self, name) -> None:
+        self.name = name
 
     def set_cards(self, card1: Card, card2: Card) -> None:
         self.card1 = card1
@@ -44,6 +48,9 @@ class AI:
     
     def get_money(self) -> int:
         return self.money;
+
+    def get_name(self) -> str:
+        return self.name
     
     def set_folded(self, boolean: bool) -> None:
         self.folded = boolean

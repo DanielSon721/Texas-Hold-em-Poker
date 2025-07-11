@@ -1,29 +1,141 @@
 import random
+import time
 
 from ai import AI
 from card import Card
 
-def main():
+
+def opponents_moves(ai_array):
+
+    pot = 0
+
+    print("")
+
+    for i in range(len(ai_array) - 1):
+        if ai_array[i].is_folded():
+            continue
+        if ai_array[i].bet():
+            print(f"{ai_array[i].get_name()} bet 25 cents")
+            pot += 25
+            ai_array[i].withdraw(25)
+            time.sleep(.1)
+        else:
+            print(f"{ai_array[i].get_name()} folded")
+            ai_array[i].set_folded(True)
+            time.sleep(.1)
+
+    print(f"{ai_array[-1].get_name()} bet 25 cents\n")
+    pot += 25
+    ai_array[-1].withdraw(25)
+
+    time.sleep(.5)
+
+    return pot
+
+
+
+def print_information(ai_array, pot, flop1, flop2, flop3, turn, river, end):
+
+    print("------------------------------------")
+    print(f"Information: (Pot: {pot})")
+    time.sleep(.3)
+
+    #prints ai information
+    for i in range(len(ai_array) - 1):
+        if ai_array[i].is_folded():
+            continue
+        if end:
+            print(f"{ai_array[i].get_name()}:\t{ai_array[i].get_cards()}\tMoney: {ai_array[i].get_money()}")
+            time.sleep(.1)
+        else:
+            print(f"{ai_array[i].get_name()}:\t\U0001F0A0 \U0001F0A0\tMoney: {ai_array[i].get_money()}")
+            time.sleep(.1)
+    
+    #prints player information
+    print(f"{ai_array[-1].get_name()}:\t\t{ai_array[-1].get_cards()}\tMoney: {ai_array[-1].get_money()}\n")
+
+    if not turn:
+        time.sleep(.5)
+        print(f"Flop: {flop1.__str__()} {flop2.__str__()} {flop3.__str__()}")
+    elif not river:
+        time.sleep(.5)
+        print(f"Turn: {flop1.__str__()} {flop2.__str__()} {flop3.__str__()} {turn.__str__()}")
+    else:
+        time.sleep(.5)
+        print(f"River: {flop1.__str__()} {flop2.__str__()} {flop3.__str__()} {turn.__str__()} {river.__str__()}")
+    
+    time.sleep(1)
+
+    print("------------------------------------\n")
+    
+    
+
+def print_ranks(ai_array, hand_combo) -> None:
+    for i in range(len(ai_array)):
+        if ai_array[i].is_folded(): # skip folded players
+            continue
+        print(f"{ai_array[i].get_name()}: ", end = "")
+
+        # calculates rank
+        hand_combo.append(ai_array[i].get_card1())
+        hand_combo.append(ai_array[i].get_card2())
+        rank = ai_array[i].calculate_rank(hand_combo)
+        hand_combo.pop(6)
+        hand_combo.pop(5)
+
+        if rank == 1:
+            print("High card")
+        elif rank == 2:
+            print("Pair")
+        elif rank == 3:
+            print("Two pair")
+        elif rank == 4:
+            print("Three of a kind")
+        elif rank == 5:
+            print("Straight")
+        elif rank == 6:
+            print("Flush")
+        elif rank == 7:
+            print("Full house")
+        elif rank == 8:
+            print("Four of a kind")
+        elif rank == 9:
+            print("Straight flush")
+        elif rank == 10:
+            print("Royal flush")
+        
+        time.sleep(.1)
+    
+
+
+
+if __name__ == "__main__":
+
     ai_array = []
-    player_money = 1000
 
-    print("How many opponents would you like?: ", end = "")
-    number_of_opponents = int (input())
+    number_of_opponents = int (input("\nHow many opponents would you like?: "))
+    time.sleep(1)
 
+    # creates ai opponenets
     for i in range(number_of_opponents):
-        ai_array.append(AI())
+        ai_array.append(AI("Opponent " + str(i+1)))
+    # player
+    ai_array.append(AI("You"))
 
-    while (player_money > 0):
+    while (ai_array[-1].get_money() > 0):
 
-        print("NEW GAME")
+        print("\n\n\t      --------")
+        print("\t      NEW GAME")
+        print("\t      --------\n")
+        time.sleep(1)
 
         pot = 0
 
         deck_of_cards = []
 
         #creates deck of cards
-        for i in range(1, 5):
-            for j in range(2, 15):
+        for i in range(1, 5): # suit
+            for j in range(2, 15): # denomination 2-Ace
                 deck_of_cards.append(Card(j, i))
         
         # for c in deck_of_cards:
@@ -38,8 +150,12 @@ def main():
         player_card2 = deck_of_cards[x]
         deck_of_cards.pop(x)
 
+        # sets players cards
+        ai_array[-1].set_cards(player_card1, player_card2)
+        ai_array[-1].set_folded(False)
+
         #assigns cards to ai
-        for i in range(len(ai_array)):
+        for i in range(number_of_opponents):
 
             ai_array[i].set_folded(False)
 
@@ -65,15 +181,13 @@ def main():
         deck_of_cards.pop(x)
 
 
-        print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, None, None, False)
+        print_information(ai_array, pot, flop1, flop2, flop3, None, None, False)
 
         #players move (flop)
         print("Would you like to bet 25 cents? (Y/N): ", end = "")
         if input() == "N":
             continue
-        pot += 25
-        player_money -= 25
-        print("\nYou bet 25 cents")
+        time.sleep(.5)
 
         #opponents move
         pot += opponents_moves(ai_array)
@@ -85,15 +199,13 @@ def main():
         turn = deck_of_cards[x]
         deck_of_cards.pop(x)
 
-        print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, turn, None, False)
+        print_information(ai_array, pot, flop1, flop2, flop3, turn, None, False)
 
         #players move (turn)
         print("Would you like to bet 25 cents? (Y/N): ", end = "")
         if input() == "N":
             continue
-        pot += 25
-        player_money -= 25
-        print("\nYou bet 25 cents")
+        time.sleep(.5)
 
         #opponents move
         pot += opponents_moves(ai_array)
@@ -105,15 +217,13 @@ def main():
         river = deck_of_cards[x]
         deck_of_cards.pop(x)
 
-        print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, turn, river, False)
+        print_information(ai_array, pot, flop1, flop2, flop3, turn, river, False)
 
         #players move (river)
         print("Would you like to bet 25 cents? (Y/N): ", end = "")
         if input() == "N":
             continue
-        pot += 25
-        player_money -= 25
-        print("\nYou bet 25 cents")
+        time.sleep(.5)
 
         #opponents move
         pot += opponents_moves(ai_array)
@@ -121,94 +231,6 @@ def main():
         
 
         #prints ranks
-        print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, turn, river, True)
+        print_information(ai_array, pot, flop1, flop2, flop3, turn, river, True)
         hand_combo = [flop1, flop2, flop3, turn, river]
         print_ranks(ai_array, hand_combo)
-        print("\n\n")
-
-
-
-
-def opponents_moves(ai_array):
-
-    pot = 0
-
-    for i in range(len(ai_array)):
-        if ai_array[i].is_folded():
-            continue
-        if ai_array[i].bet():
-            print("Opponent " + str (i + 1) + " bet 25 cents")
-            pot += 25
-            ai_array[i].withdraw(25)
-        else:
-            print("Opponent " + str (i + 1) + " folded")
-            ai_array[i].set_folded(True)
-    
-    print("")
-    return pot
-
-
-
-def print_information(ai_array, player_card1, player_card2, player_money, pot, flop1, flop2, flop3, turn, river, end):
-
-    print("Information: (Pot: " + str (pot) + ")")
-
-    #prints ai information
-    for i in range(len(ai_array)):
-        if ai_array[i].is_folded():
-            continue
-        if end:
-            print("Opponent " + str (i + 1) + ":\t" + ai_array[i].get_cards() + "\tMoney: " + str (ai_array[i].get_money()))
-        else:
-            print("Opponent " + str (i + 1) + ":\t\U0001F0A0 \U0001F0A0\tMoney: " + str (ai_array[i].get_money()))
-    
-    #prints player information
-    print("You:\t\t" + player_card1.__str__() + " " + player_card2.__str__() + "\tMoney: " + str (player_money) + "\n")
-
-    if not turn:
-        print("Flop: " + flop1.__str__() + " " + flop2.__str__() + " " + flop3.__str__() + "\n")
-    elif not river:
-        print("Turn: " + flop1.__str__() + " " + flop2.__str__() + " " + flop3.__str__() + " " + turn.__str__() + "\n")
-    elif end:
-        print("River: " + flop1.__str__() + " " + flop2.__str__() + " " + flop3.__str__() + " " + turn.__str__() + " " + river.__str__() + "\n")
-    else:
-        print("River: " + flop1.__str__() + " " + flop2.__str__() + " " + flop3.__str__() + " " + turn.__str__() + " " + river.__str__() + "\n")
-    
-    
-
-def print_ranks(ai_array, hand_combo) -> None:
-    for i in range(len(ai_array)):
-        if ai_array[i].is_folded():
-            continue
-        print("Opponent " + str (i + 1) + ": ", end = "")
-        hand_combo.append(ai_array[i].get_card1())
-        hand_combo.append(ai_array[i].get_card2())
-        x = ai_array[i].calculate_rank(hand_combo)
-        hand_combo.pop(6)
-        hand_combo.pop(5)
-        if x == 1:
-            print("High card")
-        elif x == 2:
-            print("Pair")
-        elif x == 3:
-            print("Two pair")
-        elif x == 4:
-            print("Three of a kind")
-        elif x == 5:
-            print("Straight")
-        elif x == 6:
-            print("Flush")
-        elif x == 7:
-            print("Full house")
-        elif x == 8:
-            print("Four of a kind")
-        elif x == 9:
-            print("Straight flush")
-        elif x == 10:
-            print("Royal flush")
-    
-
-
-
-if __name__ == "__main__":
-    main()
