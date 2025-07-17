@@ -1,1 +1,0 @@
-ai_array[i].get_name()
