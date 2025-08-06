@@ -57,4 +57,6 @@ Flop: 4♥ 10♣ K♠
 Would you like to bet 25 cents? (Y/N):
 ```
 
+---
+
 *DISCLAIMER THIS PROJECT IS STILL A WORK IN PROGRESS*
