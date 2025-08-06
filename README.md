@@ -5,7 +5,7 @@ This is a simple terminal-based Texas Hold'em Poker game written in Python. Play
 ## 🎮 Features
 
 - Simulates Texas Hold'em Poker (Flop, Turn, River)
-- Play against up to 7 AI opponents
+- Play against up to 10 AI opponents
 - AI uses basic probability to decide whether to bet or fold
 - Hand ranking from High Card to Royal Flush
 - Money system with betting and folding logic
@@ -50,7 +50,7 @@ This is a simple terminal-based Texas Hold'em Poker game written in Python. Play
 ## 📸 Example Output
 
 ```plaintext
-Opponent 1: 🂠 🂠   Money: 975
+Opponent 1: 🂠 🂠     Money: 975
 You:        Q♦ J♠   Money: 975
 
 Flop: 4♥ 10♣ K♠
